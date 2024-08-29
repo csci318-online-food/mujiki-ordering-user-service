@@ -9,4 +9,5 @@ public interface UserService {
 
     UserDTOResponse signUp(UserDTORequest userDTORequest);
     List<UserDTOResponse> getAll();
+    UserDTOResponse findByUsername(String username);
 }

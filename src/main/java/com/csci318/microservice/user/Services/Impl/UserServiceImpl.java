@@ -63,4 +63,18 @@ public class UserServiceImpl implements UserService {
             throw new ServiceException(ErrorTypes.UNEXPECTED_ERROR.getMessage(), e, ErrorTypes.UNEXPECTED_ERROR);
         }
     }
+
+    public UserDTOResponse findByUsername(String username) {
+        try {
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new ServiceException(ErrorTypes.USER_NOT_FOUND.getMessage(), null, ErrorTypes.USER_NOT_FOUND));
+            return userMapper.toDtos(user);
+        } catch (ServiceException e) {
+            log.error("Service exception: {}", e.getMessage(), e);
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected error occurred while retrieving user by username: ", e);
+            throw new ServiceException(ErrorTypes.UNEXPECTED_ERROR.getMessage(), e, ErrorTypes.UNEXPECTED_ERROR);
+        }
+    }
 }
