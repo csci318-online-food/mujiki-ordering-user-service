@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: user
+  datasource:
+    url: jdbc:h2:mem:mujiki
+    username: mujiki_db
+    password: nothing
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    open-in-view: false
+  liquibase:
+    change-log: classpath:logs/db.changelog-master.xml
+    enabled: true
+
+api:
+  endpoint:
+    base-url: /api
+
+server:
+  error:
+    whitelabel:
+      enabled: false
+
