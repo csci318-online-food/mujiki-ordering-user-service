@@ -12,6 +12,7 @@ import com.csci318.microservice.user.Repositories.UserRepository;
 import com.csci318.microservice.user.Services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,15 +29,17 @@ public class UserServiceImpl implements UserService {
     private final UserMapperImpl userMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${address.url.service}")
     private String ADDRESS_URL;
 
-    public UserServiceImpl(RestTemplate restTemplate, UserMapperImpl userMapper, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(RestTemplate restTemplate, UserMapperImpl userMapper, UserRepository userRepository, PasswordEncoder passwordEncoder, ApplicationEventPublisher eventPublisher) {
         this.restTemplate = restTemplate;
         this.userMapper = userMapper;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -59,6 +62,7 @@ public class UserServiceImpl implements UserService {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             User savedUser = userRepository.save(user);
             log.info("Saved user successfully!");
+            eventPublisher.publishEvent(savedUser);
             return userMapper.toDtos(savedUser);
         } catch (ServiceException e) {
             log.error("Service exception: {}", e.getMessage(), e);
