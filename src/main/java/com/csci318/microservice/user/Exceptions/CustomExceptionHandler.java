@@ -13,6 +13,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
@@ -20,6 +22,18 @@ import java.util.*;
 
 @ControllerAdvice
 public class CustomExceptionHandler {
+
+    // Handling HTTP client errors from external services
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<String> handleHttpClientErrorException(HttpClientErrorException ex) {
+        return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBodyAsString());
+    }
+
+    // Handling HTTP server errors from external services
+    @ExceptionHandler(HttpServerErrorException.class)
+    public ResponseEntity<String> handleHttpServerErrorException(HttpServerErrorException ex) {
+        return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBodyAsString());
+    }
 
     // Service exception handler
     @ExceptionHandler(ServiceException.class)

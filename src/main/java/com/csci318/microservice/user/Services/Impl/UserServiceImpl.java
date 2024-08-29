@@ -10,6 +10,7 @@ import com.csci318.microservice.user.Mappers.Impl.UserMapperImpl;
 import com.csci318.microservice.user.Repositories.UserRepository;
 import com.csci318.microservice.user.Services.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +22,12 @@ public class UserServiceImpl implements UserService {
 
     private final UserMapperImpl userMapper;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserMapperImpl userMapper, UserRepository userRepository) {
+    public UserServiceImpl(UserMapperImpl userMapper, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userMapper = userMapper;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -40,6 +43,7 @@ public class UserServiceImpl implements UserService {
                 throw new ServiceException(ErrorTypes.USER_ALREADY_EXIST.getMessage(), null, ErrorTypes.USER_EMAIL_ALREADY_EXIST);
             }
             user.setRole(Roles.USER);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             User savedUser = userRepository.save(user);
             log.info("Saved user successfully!");
             return userMapper.toDtos(savedUser);
