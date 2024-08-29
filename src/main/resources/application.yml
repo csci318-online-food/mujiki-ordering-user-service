@@ -1,3 +1,4 @@
+# Spring Configuration
 spring:
   application:
     name: user
@@ -17,10 +18,24 @@ spring:
     change-log: classpath:logs/db.changelog-master.xml
     enabled: true
 
+# API Configuration
 api:
   endpoint:
     base-url: /api
 
+# Feign Client Configuration
+feign:
+  client:
+    config:
+      default:
+        logger:
+          level: full
+        request:
+          timeout: 5000
+        connect-timeout: 5000
+        read-timeout: 5000
+
+# Server Configuration
 server:
   error:
     whitelabel:
