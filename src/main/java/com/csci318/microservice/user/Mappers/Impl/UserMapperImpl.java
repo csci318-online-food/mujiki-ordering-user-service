@@ -17,6 +17,7 @@ public class UserMapperImpl implements Mapper<User, UserDTOResponse, UserDTORequ
         UserDTOResponse dto = new UserDTOResponse();
         dto.setId(entity.getId());
         dto.setUsername(entity.getUsername());
+        dto.setPassword(entity.getPassword());
         dto.setFirstName(entity.getFirstName());
         dto.setLastName(entity.getLastName());
         dto.setEmail(entity.getEmail());

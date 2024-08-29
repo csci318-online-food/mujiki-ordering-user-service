@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -34,6 +35,10 @@ public class UserServiceImpl implements UserService {
     public UserDTOResponse signUp(UserDTORequest userDTORequest) {
         try {
             log.info("Creating user {}", userDTORequest);
+            if (userDTORequest.getPassword() == null || userDTORequest.getPassword().isEmpty()) {
+                log.error("Password cannot be empty");
+                throw new ServiceException(ErrorTypes.USER_INVALID_INPUT.getMessage(), null, ErrorTypes.USER_INVALID_INPUT);
+            }
             User user = this.userMapper.toEntities(userDTORequest);
             if (userRepository.existsByUsername(user.getUsername())) {
                 log.error("Username already exists");
@@ -78,6 +83,21 @@ public class UserServiceImpl implements UserService {
             throw e;
         } catch (Exception e) {
             log.error("Unexpected error occurred while retrieving user by username: ", e);
+            throw new ServiceException(ErrorTypes.UNEXPECTED_ERROR.getMessage(), e, ErrorTypes.UNEXPECTED_ERROR);
+        }
+    }
+
+    @Override
+    public UserDTOResponse findById(UUID userId) {
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ServiceException(ErrorTypes.USER_NOT_FOUND.getMessage(), null, ErrorTypes.USER_NOT_FOUND));
+            return userMapper.toDtos(user);
+        } catch (ServiceException e) {
+            log.error("Service exception: {}", e.getMessage(), e);
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected error occurred while retrieving user by id: ", e);
             throw new ServiceException(ErrorTypes.UNEXPECTED_ERROR.getMessage(), e, ErrorTypes.UNEXPECTED_ERROR);
         }
     }
