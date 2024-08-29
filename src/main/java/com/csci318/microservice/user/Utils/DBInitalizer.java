@@ -24,7 +24,7 @@ public class DBInitalizer implements CommandLineRunner {
 
         if (userRepository.count() == 0) {
             User user1 = new User();
-            user1.setId(UUID.randomUUID());
+            user1.setId(UuidUtils.getFixedUUID());
             user1.setUsername("evanle");
             user1.setPassword("password1");
             user1.setFirstName("Evan");
@@ -38,7 +38,7 @@ public class DBInitalizer implements CommandLineRunner {
             user1.setModifyBy("system");
 
             User user2 = new User();
-            user2.setId(UUID.randomUUID());
+            user2.setId(UUID.fromString("e50f4c17-a0af-4c74-b589-c815e87ba820"));
             user2.setUsername("jasminewang");
             user2.setPassword("password2");
             user2.setFirstName("Jasmine");

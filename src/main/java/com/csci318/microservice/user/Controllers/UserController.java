@@ -2,6 +2,7 @@ package com.csci318.microservice.user.Controllers;
 
 import com.csci318.microservice.user.DTOs.UserDTORequest;
 import com.csci318.microservice.user.DTOs.UserDTOResponse;
+import com.csci318.microservice.user.Entities.Relations.Address;
 import com.csci318.microservice.user.Services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,9 +37,14 @@ public class UserController {
         return userService.findByUsername(username);
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/findById/{userId}")
     public UserDTOResponse getUserById(@PathVariable UUID userId) {
         return userService.findById(userId);
+    }
+
+    @GetMapping("/addresses/{userId}")
+    public List<Address> viewAddress(@PathVariable UUID userId) {
+        return userService.viewAddress(userId);
     }
 
 

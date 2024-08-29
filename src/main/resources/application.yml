@@ -25,6 +25,10 @@ api:
   endpoint:
     base-url: /api
 
+address:
+  url:
+    service: http://localhost:83/api/address
+
 
 # Server Configuration
 server:
@@ -32,3 +36,6 @@ server:
     whitelabel:
       enabled: false
   port: 81
+
+
+

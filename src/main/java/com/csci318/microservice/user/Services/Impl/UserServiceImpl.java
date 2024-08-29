@@ -3,6 +3,7 @@ package com.csci318.microservice.user.Services.Impl;
 import com.csci318.microservice.user.Constants.Roles;
 import com.csci318.microservice.user.DTOs.UserDTORequest;
 import com.csci318.microservice.user.DTOs.UserDTOResponse;
+import com.csci318.microservice.user.Entities.Relations.Address;
 import com.csci318.microservice.user.Entities.User;
 import com.csci318.microservice.user.Exceptions.ServiceExceptionHandler.ErrorTypes;
 import com.csci318.microservice.user.Exceptions.ServiceExceptionHandler.ServiceException;
@@ -10,9 +11,11 @@ import com.csci318.microservice.user.Mappers.Impl.UserMapperImpl;
 import com.csci318.microservice.user.Repositories.UserRepository;
 import com.csci318.microservice.user.Services.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,11 +24,16 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private final RestTemplate restTemplate;
     private final UserMapperImpl userMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserMapperImpl userMapper, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    @Value("${address.url.service}")
+    private String ADDRESS_URL;
+
+    public UserServiceImpl(RestTemplate restTemplate, UserMapperImpl userMapper, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.restTemplate = restTemplate;
         this.userMapper = userMapper;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -73,6 +81,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
     public UserDTOResponse findByUsername(String username) {
         try {
             User user = userRepository.findByUsername(username)
@@ -93,6 +102,21 @@ public class UserServiceImpl implements UserService {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new ServiceException(ErrorTypes.USER_NOT_FOUND.getMessage(), null, ErrorTypes.USER_NOT_FOUND));
             return userMapper.toDtos(user);
+        } catch (ServiceException e) {
+            log.error("Service exception: {}", e.getMessage(), e);
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected error occurred while retrieving user by id: ", e);
+            throw new ServiceException(ErrorTypes.UNEXPECTED_ERROR.getMessage(), e, ErrorTypes.UNEXPECTED_ERROR);
+        }
+    }
+
+    @Override
+    public List<Address> viewAddress(UUID userId) {
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ServiceException(ErrorTypes.USER_NOT_FOUND.getMessage(), null, ErrorTypes.USER_NOT_FOUND));
+            return restTemplate.getForObject(ADDRESS_URL +"/forUser/"+ userId, List.class);
         } catch (ServiceException e) {
             log.error("Service exception: {}", e.getMessage(), e);
             throw e;
