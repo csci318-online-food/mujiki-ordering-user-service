@@ -58,6 +58,8 @@ public class UserServiceImpl implements UserService {
                 log.error("Email already exists");
                 throw new ServiceException(ErrorTypes.USER_ALREADY_EXIST.getMessage(), null, ErrorTypes.USER_EMAIL_ALREADY_EXIST);
             }
+            // TODO: Control UUID generation.
+            user.setId(UUID.randomUUID());
             user.setRole(Roles.USER);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             User savedUser = userRepository.save(user);
