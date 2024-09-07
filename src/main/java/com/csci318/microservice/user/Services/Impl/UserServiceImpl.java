@@ -42,6 +42,7 @@ public class UserServiceImpl implements UserService {
         this.eventPublisher = eventPublisher;
     }
 
+    // Task B (1st): Create User
     @Transactional
     public UserDTOResponse signUp(UserDTORequest userDTORequest) {
         try {
