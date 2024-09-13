@@ -1,4 +1,4 @@
-package com.csci318.microservice.user.Entities.Relations;
+package com.csci318.microservice.user.Domain.Relations;
 
 import java.util.UUID;
 

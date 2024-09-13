@@ -1,9 +1,10 @@
 package com.csci318.microservice.user.Repositories;
 
-import com.csci318.microservice.user.Entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import com.csci318.microservice.user.Domain.Entities.User;
 
 import java.util.Optional;
 import java.util.UUID;

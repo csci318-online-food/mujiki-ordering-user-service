@@ -1,4 +1,4 @@
-package com.csci318.microservice.user.Entities;
+package com.csci318.microservice.user.Domain.Entities;
 
 import com.csci318.microservice.user.Constants.Roles;
 import jakarta.persistence.*;

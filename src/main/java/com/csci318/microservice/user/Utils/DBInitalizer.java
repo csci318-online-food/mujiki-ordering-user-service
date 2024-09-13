@@ -1,7 +1,7 @@
 package com.csci318.microservice.user.Utils;
 
 import com.csci318.microservice.user.Constants.Roles;
-import com.csci318.microservice.user.Entities.User;
+import com.csci318.microservice.user.Domain.Entities.User;
 import com.csci318.microservice.user.Repositories.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

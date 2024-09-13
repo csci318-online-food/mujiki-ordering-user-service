@@ -2,7 +2,7 @@ package com.csci318.microservice.user.Services;
 
 import com.csci318.microservice.user.DTOs.UserDTORequest;
 import com.csci318.microservice.user.DTOs.UserDTOResponse;
-import com.csci318.microservice.user.Entities.Relations.Address;
+import com.csci318.microservice.user.Domain.Relations.Address;
 
 import java.util.List;
 import java.util.UUID;
