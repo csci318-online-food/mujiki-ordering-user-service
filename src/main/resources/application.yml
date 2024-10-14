@@ -29,6 +29,14 @@ address:
   url:
     service: http://localhost:8083/api/address
 
+  # Spring Cloud Stream - Kafka Configuration
+  cloud:
+    stream:
+      bindings:
+        mujikiOrderEventChannel-consumer:
+          destination: mujikiOrderEvent 
+          group: userGroup # Consumer
+          content-type: application/json
 
 # Server Configuration
 server:
@@ -36,6 +44,3 @@ server:
     whitelabel:
       enabled: false
   port: 8081
-
-
-
