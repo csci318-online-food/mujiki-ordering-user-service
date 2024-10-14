@@ -2,7 +2,6 @@ package com.csci318.microservice.user.Mappers;
 
 import java.util.List;
 
-
 public interface Mapper<Entities, DTOsResponse, DTOsRequest> {
     DTOsResponse toDtos(Entities entity);
     Entities toEntities(DTOsRequest dto);

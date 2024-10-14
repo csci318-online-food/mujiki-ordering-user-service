@@ -42,7 +42,15 @@ CREATE TYPE IF NOT EXISTS loyalty_rank AS ENUM ('BRONZE', 'SILVER', 'GOLD', 'PLA
 
 CREATE TABLE IF NOT EXISTS loyalty (
     id UUID PRIMARY KEY,
-    user_id UUID,
+    user_id UUID UNIQUE,
     points INT,
     rank loyalty_rank
-)
+);
+
+CREATE TABLE IF NOT EXISTS loyalty_entries (
+    id UUID PRIMARY KEY,
+    loyalty_id UUID,
+    points_earned INT,
+    points_spent INT,
+    expiry_date DATE
+);

@@ -32,9 +32,9 @@ public class LoyaltyController {
         return ResponseEntity.ok(loyaltyDTOResponse);
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<LoyaltyDTOResponse> getLoyaltyForUser(@PathVariable UUID userId) {
-        LoyaltyDTOResponse loyaltyDTOResponse = loyaltyService.getLoyaltyForUser(userId);
+    @GetMapping("/{loyaltyId}")
+    public ResponseEntity<LoyaltyDTOResponse> getLoyaltyForUser(@PathVariable UUID loyaltyId) {
+        LoyaltyDTOResponse loyaltyDTOResponse = loyaltyService.getLoyalty(loyaltyId);
         return ResponseEntity.ok(loyaltyDTOResponse);
     }
 }
