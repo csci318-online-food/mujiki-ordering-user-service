@@ -1,13 +1,17 @@
 package com.csci318.microservice.user.Domain.Entities;
 
-import java.time.LocalDate;
 import java.util.UUID;
+
+import com.csci318.microservice.user.Constants.LoyaltyRank;
+import com.csci318.microservice.user.Utils.Annotations.OneToOne;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,18 +26,17 @@ import lombok.Setter;
 @Table(name = "loyalty")
 public class Loyalty {
      @Id
-     @GeneratedValue(strategy = GenerationType.IDENTITY)
+     @GeneratedValue(strategy = GenerationType.UUID)
      private UUID id;
 
-     @Column(name = "loyalty_points")
-     private int loyaltyPoints;
+     @Column(name = "user_id")
+     @OneToOne(targetEntity = User.class)
+     private UUID userId;
+
+     @Column(name = "points")
+     private int points;
 
      @Column(name = "rank")
-     private String rank;
-
-     @Column(name = "point_expiry_date")
-     private LocalDate pointExpiryDate;
-
-     @Column(name = "user_id")
-     private UUID userId;
+     @Enumerated(EnumType.STRING)
+     private LoyaltyRank rank;
 }

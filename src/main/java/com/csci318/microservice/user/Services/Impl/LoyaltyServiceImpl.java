@@ -5,7 +5,12 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.csci318.microservice.user.Constants.LoyaltyRank;
+import com.csci318.microservice.user.DTOs.LoyaltyDTORequest;
+import com.csci318.microservice.user.DTOs.LoyaltyDTOResponse;
 import com.csci318.microservice.user.Domain.Entities.Loyalty;
+import com.csci318.microservice.user.Domain.Relations.OrderStatusEvent;
+import com.csci318.microservice.user.Mappers.Impl.LoyaltyMapper;
 import com.csci318.microservice.user.Repositories.LoyaltyRepository;
 import com.csci318.microservice.user.Services.LoyaltyService;
 
@@ -13,62 +18,66 @@ import com.csci318.microservice.user.Services.LoyaltyService;
 public class LoyaltyServiceImpl implements LoyaltyService {
 
     private final LoyaltyRepository loyaltyRepository;
+    private final LoyaltyMapper loyaltyMapper;
 
-    public LoyaltyServiceImpl(LoyaltyRepository loyaltyRepository) {
+    public LoyaltyServiceImpl(
+        LoyaltyRepository loyaltyRepository,
+        LoyaltyMapper loyaltyMapper
+    ) {
         this.loyaltyRepository = loyaltyRepository;
+        this.loyaltyMapper = loyaltyMapper;
     }
 
     @Override
-    public Loyalty createLoyalty(UUID userId) {
+    public LoyaltyDTOResponse enrollInLoyalty(LoyaltyDTORequest loyaltyDTORequest) {
         Loyalty loyalty = new Loyalty();
-        loyalty.setLoyaltyPoints(0);
-        loyalty.setRank("Bronze");
-        loyalty.setPointExpiryDate(LocalDate.now().plusMonths(1));
-        loyalty.setUserId(userId);
-        return loyaltyRepository.save(loyalty);
+        loyalty.setId(UUID.randomUUID());
+        loyalty.setPoints(0);
+        loyalty.setRank(LoyaltyRank.BRONZE);
+        loyalty.setUserId(loyaltyDTORequest.getUserId());
+        loyaltyRepository.save(loyalty);
+        return loyaltyMapper.toDtos(loyalty);
     }
 
     @Override
-    public int calculatePoints(double orderTotal, Loyalty loyalty) {
-        int pointsByRank = this.getPointsByRank(loyalty.getRank());
-        
-        int points = (int) (orderTotal / 10) + pointsByRank;
-        
-        return points;
-    }
-
-    @Override
-    public int getPointsByRank(String rank) {
+    public int getPointsByRank(LoyaltyRank rank) {
         switch (rank) {
-            case "Platinum": return 50;
-            case "Gold": return 35;
-            case "Silver": return 20;
-            case "Bronze": return 10;
+            case LoyaltyRank.PLATINUM: return 50;
+            case LoyaltyRank.GOLD: return 35;
+            case LoyaltyRank.SILVER: return 20;
+            case LoyaltyRank.BRONZE: return 10;
             default: return 0; // Default
         }
     }
-    
+
 
     @Override
     public LocalDate calculateExpiryDate(Loyalty loyalty) {
         switch (loyalty.getRank()) {
-            case "Gold": return LocalDate.now().plusYears(1);
-            case "Silver": return LocalDate.now().plusMonths(6);
-            case "Bronze": return LocalDate.now().plusMonths(3);
+            case LoyaltyRank.GOLD: return LocalDate.now().plusYears(1);
+            case LoyaltyRank.SILVER: return LocalDate.now().plusMonths(6);
+            case LoyaltyRank.BRONZE: return LocalDate.now().plusMonths(3);
             default: return LocalDate.now().plusMonths(1);
         }
     }
 
     @Override
-    public void updateLoyaltyPoints(UUID userId, int points) {
+    public void updateLoyaltyStatus(OrderStatusEvent event) {
+        UUID userId = event.getUserId();
+        double orderTotal = event.getTotalPrice();
+
         Loyalty loyalty = loyaltyRepository.findByUserId(userId).orElseThrow();
-        loyalty.setLoyaltyPoints(loyalty.getLoyaltyPoints() + points);
-        loyalty.setPointExpiryDate(calculateExpiryDate(loyalty));
+
+        int pointsByRank = getPointsByRank(loyalty.getRank());
+        int points = (int)(orderTotal / 10) + pointsByRank;
+
+        loyalty.setPoints(loyalty.getPoints() + points);
         loyaltyRepository.save(loyalty);
     }
 
-    public Loyalty findLoyaltyByUserId(UUID userId) {
-        return loyaltyRepository.findByUserId(userId).orElseThrow();
+    @Override
+    public LoyaltyDTOResponse getLoyaltyForUser(UUID userId) {
+        return loyaltyMapper.toDtos(loyaltyRepository.findByUserId(userId).orElseThrow());
     }
 
 }

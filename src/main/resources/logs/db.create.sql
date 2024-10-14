@@ -20,20 +20,29 @@ CREATE TYPE IF NOT EXISTS cuisine_type AS ENUM (
     'EGYPTIAN',
     'MOROCCAN',
     'TURKISH'
-    );
+);
 
 
 CREATE TABLE IF NOT EXISTS users (
- id UUID PRIMARY KEY,
- username varchar(64),
- password varchar(256),
- firstname varchar(16),
- lastname varchar(16),
- email varchar(64),
- phone varchar(16),
- roles user_roles NOT NULL,
- create_at timestamp,
- modify_at timestamp,
- modify_by varchar(64),
- create_by varchar(64)
+    id UUID PRIMARY KEY,
+    username varchar(64),
+    password varchar(256),
+    firstname varchar(16),
+    lastname varchar(16),
+    email varchar(64),
+    phone varchar(16),
+    roles user_roles NOT NULL,
+    create_at timestamp,
+    modify_at timestamp,
+    modify_by varchar(64),
+    create_by varchar(64)
 );
+
+CREATE TYPE IF NOT EXISTS loyalty_rank AS ENUM ('BRONZE', 'SILVER', 'GOLD', 'PLATINUM');
+
+CREATE TABLE IF NOT EXISTS loyalty (
+    id UUID PRIMARY KEY,
+    user_id UUID,
+    points INT,
+    rank loyalty_rank
+)

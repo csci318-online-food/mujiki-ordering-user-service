@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class UserMapperImpl implements Mapper<User, UserDTOResponse, UserDTORequest> {
+public class UserMapper implements Mapper<User, UserDTOResponse, UserDTORequest> {
 
     @Override
     public UserDTOResponse toDtos(User entity) {

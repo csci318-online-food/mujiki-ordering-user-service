@@ -1,27 +1,31 @@
-package com.csci318.microservice.user.Domain.Events;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import com.csci318.microservice.user.Constants.OrderStatus;
+package com.csci318.microservice.user.Domain.Relations;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import com.csci318.microservice.user.Constants.OrderStatus;
+
+import io.micrometer.common.lang.Nullable;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class OrderStatusChangedEvent {
+public class OrderStatusEvent {
     private UUID id;
     private String eventName;
     private UUID orderId;
     private UUID userId;
     private UUID restaurantId;
-    private OrderStatus oldStatus;
     private OrderStatus status;
-    private LocalDateTime changeTime;
+    @Nullable
+    private OrderStatus oldStatus;
+    @Nullable
     private Double totalPrice;
+    private LocalDateTime changeTime;
 }

@@ -7,7 +7,7 @@ import com.csci318.microservice.user.Domain.Entities.User;
 import com.csci318.microservice.user.Domain.Relations.Address;
 import com.csci318.microservice.user.Exceptions.ServiceExceptionHandler.ErrorTypes;
 import com.csci318.microservice.user.Exceptions.ServiceExceptionHandler.ServiceException;
-import com.csci318.microservice.user.Mappers.Impl.UserMapperImpl;
+import com.csci318.microservice.user.Mappers.Impl.UserMapper;
 import com.csci318.microservice.user.Repositories.UserRepository;
 import com.csci318.microservice.user.Services.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,7 +27,7 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final RestTemplate restTemplate;
-    private final UserMapperImpl userMapper;
+    private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher eventPublisher;
@@ -34,7 +35,7 @@ public class UserServiceImpl implements UserService {
     @Value("${address.url.service}")
     private String ADDRESS_URL;
 
-    public UserServiceImpl(RestTemplate restTemplate, UserMapperImpl userMapper, UserRepository userRepository, PasswordEncoder passwordEncoder, ApplicationEventPublisher eventPublisher) {
+    public UserServiceImpl(RestTemplate restTemplate, UserMapper userMapper, UserRepository userRepository, PasswordEncoder passwordEncoder, ApplicationEventPublisher eventPublisher) {
         this.restTemplate = restTemplate;
         this.userMapper = userMapper;
         this.userRepository = userRepository;
@@ -121,9 +122,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Address> viewAddress(UUID userId) {
         try {
-            User user = userRepository.findById(userId)
+            userRepository.findById(userId)
                     .orElseThrow(() -> new ServiceException(ErrorTypes.USER_NOT_FOUND.getMessage(), null, ErrorTypes.USER_NOT_FOUND));
-            return restTemplate.getForObject(ADDRESS_URL +"/forUser/"+ userId, List.class);
+            return Arrays.asList(restTemplate.getForObject(ADDRESS_URL +"/forUser/"+ userId, Address[].class));
         } catch (ServiceException e) {
             log.error("Service exception: {}", e.getMessage(), e);
             throw e;

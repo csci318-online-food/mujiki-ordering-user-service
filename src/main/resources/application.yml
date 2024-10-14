@@ -20,6 +20,17 @@ spring:
     change-log: classpath:logs/db.changelog-master.xml
     enabled: true
 
+  # Spring Cloud Stream - Kafka Configuration
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:9092  # Kafka broker location, can be a list for multiple brokers
+      bindings:
+        handleOrderStatusEvent-in-0:
+          destination: mujikiOrderEvent     # Topic for Mujiki Order Events
+          content-type: application/json    # Content type for messages
+
 # API Configuration
 api:
   endpoint:
@@ -28,15 +39,6 @@ api:
 address:
   url:
     service: http://localhost:8083/api/address
-
-  # Spring Cloud Stream - Kafka Configuration
-  cloud:
-    stream:
-      bindings:
-        mujikiOrderEventChannel-consumer:
-          destination: mujikiOrderEvent 
-          group: userGroup # Consumer
-          content-type: application/json
 
 # Server Configuration
 server:

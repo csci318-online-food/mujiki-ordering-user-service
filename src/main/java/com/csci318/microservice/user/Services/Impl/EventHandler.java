@@ -3,28 +3,36 @@ package com.csci318.microservice.user.Services.Impl;
 import java.util.function.Consumer;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Service;
 
 import com.csci318.microservice.user.Constants.OrderStatus;
-import com.csci318.microservice.user.Domain.Entities.Loyalty;
-import com.csci318.microservice.user.Domain.Events.OrderStatusChangedEvent;
+import com.csci318.microservice.user.Domain.Relations.OrderStatusEvent;
 import com.csci318.microservice.user.Services.LoyaltyService;
 
-public class EventHandler {
-     
-     private final LoyaltyService loyaltyService;
+import lombok.extern.slf4j.Slf4j;
 
-     public EventHandler(LoyaltyService loyaltyService) {
-          this.loyaltyService = loyaltyService;
-     }
+@Service
+@Slf4j
+public class EventHandler {
+    private final LoyaltyService loyaltyService;
+
+    public EventHandler(LoyaltyService loyaltyService) {
+        this.loyaltyService = loyaltyService;
+    }
 
     @Bean
-    public Consumer<OrderStatusChangedEvent> handleOrderStatusChangedEvent() {
+    public Consumer<OrderStatusEvent> handleOrderStatusEvent() {
         return event -> {
+            log.info(
+                "Received order status event for order " +
+                event.getOrderId().toString() +
+                " by user " + event.getUserId().toString() +
+                ", status: " + event.getStatus().toString()
+            );
+
             // Process orders COMPLETED
             if (event.getStatus() == OrderStatus.COMPLETED) {
-                Loyalty loyalty = loyaltyService.findLoyaltyByUserId(event.getUserId());
-                int points = loyaltyService.calculatePoints(event.getTotalPrice(), loyalty);
-                loyaltyService.updateLoyaltyPoints(event.getUserId(), points);
+                loyaltyService.updateLoyaltyStatus(event);
             }
         };
     }

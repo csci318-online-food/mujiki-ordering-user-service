@@ -1,15 +1,18 @@
 package com.csci318.microservice.user.Controllers;
 
+import com.csci318.microservice.user.DTOs.LoyaltyDTORequest;
+import com.csci318.microservice.user.DTOs.LoyaltyDTOResponse;
+import com.csci318.microservice.user.Services.LoyaltyService;
+
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.csci318.microservice.user.Domain.Entities.Loyalty;
-import com.csci318.microservice.user.Services.LoyaltyService;
 
 @RestController
 @RequestMapping("${api.endpoint.base-url}/loyalty")
@@ -21,11 +24,17 @@ public class LoyaltyController {
           this.loyaltyService = loyaltyService;
      }
 
-    @PostMapping("/create/{userId}")
-    public ResponseEntity<Loyalty> createLoyalty(@PathVariable("userId") UUID userId) {
-        Loyalty loyalty = loyaltyService.createLoyalty(userId);
-        return ResponseEntity.ok(loyalty);
+    @PostMapping("/enroll")
+    public ResponseEntity<LoyaltyDTOResponse> enrollInLoyalty(
+        @RequestBody LoyaltyDTORequest loyaltyDTORequest
+    ) {
+        LoyaltyDTOResponse loyaltyDTOResponse = loyaltyService.enrollInLoyalty(loyaltyDTORequest);
+        return ResponseEntity.ok(loyaltyDTOResponse);
     }
 
-     
+    @GetMapping("/{userId}")
+    public ResponseEntity<LoyaltyDTOResponse> getLoyaltyForUser(@PathVariable UUID userId) {
+        LoyaltyDTOResponse loyaltyDTOResponse = loyaltyService.getLoyaltyForUser(userId);
+        return ResponseEntity.ok(loyaltyDTOResponse);
+    }
 }
